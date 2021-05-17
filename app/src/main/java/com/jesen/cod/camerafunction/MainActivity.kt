@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.jesen.cod.camerafunction.activity.SystemCameraActivity
+import com.jesen.cod.camerafunction.camera.CameraActivity
 import com.jesen.cod.camerafunction.utils.Outil
 import com.jesen.cod.camerafunction.utils.PermissionUtil
 import com.jesen.cod.camerafunction.utils.PermissionUtil.PERMISSION_REQUEST_CODE
@@ -35,6 +36,24 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, SystemCameraActivity::class.java))
             })
         }
+
+        cameraBtn.setOnClickListener {
+            PermissionUtil.checkPermissions(this, permissionList, Runnable {
+                val intent = Intent(this, CameraActivity::class.java)
+                intent.putExtra("type", 0)
+                startActivity(intent)
+            })
+        }
+
+        cameraVideoBtn.setOnClickListener {
+            PermissionUtil.checkPermissions(this, permissionList, Runnable {
+                val intent = Intent(this, CameraActivity::class.java)
+                intent.putExtra("type", 1)
+                startActivity(intent)
+            })
+        }
+
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

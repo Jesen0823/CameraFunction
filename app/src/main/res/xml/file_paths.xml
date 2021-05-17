@@ -25,7 +25,14 @@
     <files-path
         name="camera_no_sdcard"
         path="." />
+
     <external-path
         name="capture"
         path="/Pictures/" />
+    <external-path
+        name="camera"
+        path="/DCIM/" />
+    <external-path
+        name="video"
+        path="/Movies/" />
 </paths>

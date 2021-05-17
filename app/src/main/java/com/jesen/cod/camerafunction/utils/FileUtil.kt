@@ -42,10 +42,10 @@ object FileUtil {
         }
     }
 
-    fun createCameraFile(folderName: String = "camera1", context: Context): File? {
+    fun createCameraFile(folderName: String = "camera", context: Context): File? {
         return try {
             val rootFile = File(getStoragePath(context, Environment.DIRECTORY_DCIM)
-                    + File.separator + "$folderName")
+                    + File.separator + folderName)
             if (!rootFile.exists())
                 rootFile.mkdirs()
 
