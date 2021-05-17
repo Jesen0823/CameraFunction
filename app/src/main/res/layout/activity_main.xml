@@ -6,13 +6,63 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <GridLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:columnCount="1"
+        android:padding="20dp"
+        android:rowCount="5"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/btCapture"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="系统相机拍照" />
+
+        <Button
+            android:id="@+id/ucropCaptureBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Ucrop裁剪" />
+
+        <Button
+            android:id="@+id/cameraBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="用Camera 拍照" />
+
+        <Button
+            android:id="@+id/cameraVideoBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="用Camera 录视频" />
+
+        <Button
+            android:id="@+id/camera2Btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="使用Camera2 拍照" />
+
+        <Button
+            android:id="@+id/camera2FaceBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="用Camera2 人脸检测" />
+
+        <Button
+            android:id="@+id/btTest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="test" />
+    </GridLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
