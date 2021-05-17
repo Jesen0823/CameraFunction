@@ -25,6 +25,7 @@ import com.jesen.cod.camerafunction.utils.GetImagePath;
 import com.jesen.cod.camerafunction.utils.Outil;
 import com.jesen.cod.camerafunction.utils.CompressImgTask;
 import com.jesen.cod.camerafunction.utils.FileUtil;
+import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,8 +51,10 @@ public class SystemCameraActivity extends AppCompatActivity {
     private String ROOT_FOLDER_PATH;
     private File mImageFile;
     private File mCropFile;
+    private boolean flagUcrop = false; //是否使用三方库裁剪
 
     private Button thumbSysBtn, realSysBtn, captureClipBtn, albumClipBtn, captureVideoBtn;
+    private Button uCropCaptureBtn, uCropAlbumBtn;
     private ImageView resultShow;
     private VideoView videoView;
     private TextView tipText;
@@ -74,6 +77,8 @@ public class SystemCameraActivity extends AppCompatActivity {
         captureClipBtn = findViewById(R.id.captureClipBtn);
         albumClipBtn = findViewById(R.id.albumClipBtn);
         captureVideoBtn = findViewById(R.id.captureVideoBtn);
+        uCropCaptureBtn = findViewById(R.id.ucropCaptureBtn);
+        uCropAlbumBtn = findViewById(R.id.uCropAlbumBtn);
 
         resultShow = findViewById(R.id.iv_result);
         videoView = findViewById(R.id.videoView);
@@ -85,9 +90,13 @@ public class SystemCameraActivity extends AppCompatActivity {
 
         captureClipBtn.setOnClickListener(view -> startSysCapThenCut());
 
-        albumClipBtn.setOnClickListener(view -> startOpenAlbumThenOpen());
+        albumClipBtn.setOnClickListener(view -> startOpenAlbumThenClip());
+
+        uCropCaptureBtn.setOnClickListener(view -> startSysCapThenUCrop());
 
         captureVideoBtn.setOnClickListener(view -> startCapVideoThenPlay());
+
+        uCropAlbumBtn.setOnClickListener(view -> startuCropAlbum());
     }
 
     // 普通系统拍照，将返回缩略图
@@ -139,8 +148,18 @@ public class SystemCameraActivity extends AppCompatActivity {
         }
     }
 
+    private void startSysCapThenUCrop(){
+        flagUcrop = true;
+        startSysCapThenCut();
+    }
+    
+    private void startuCropAlbum(){
+        flagUcrop = true;
+        startOpenAlbumThenClip();
+    }
+
     // 打开相册并剪裁
-    private void startOpenAlbumThenOpen() {
+    private void startOpenAlbumThenClip() {
         mImageFile = createImageFile(true);
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -177,20 +196,43 @@ public class SystemCameraActivity extends AppCompatActivity {
                 //resultShowOriginImg(resultShow);
                 resultshowCompressImg(resultShow);
             } else if (requestCode == REQ_CAPTURE_CLIP_3) {
-                tipText.setText("拍照剪裁：");
                 Uri outImgUri = FileProvider.getUriForFile(this, AUTHORITY, mImageFile);
-                startPhotoZoom(outImgUri);
+                if (flagUcrop){
+                    tipText.setText("拍照Ucrop剪裁：");
+                    useUCrop(outImgUri);
+                    flagUcrop = false;
+                }else{
+                    tipText.setText("拍照系统剪裁：");
+                    startPhotoZoom(outImgUri);
+                }
+            } else if (requestCode == REQ_OPEN_ALBUM_4) {
+                if (flagUcrop){
+                    tipText.setText("相册Ucrop剪裁：");
+                    useUCrop(data.getData());
+                    flagUcrop = false;
+                }else{
+                    tipText.setText("相册系统剪裁：");
+                    startPhotoZoom(data.getData());
+                }
             } else if (requestCode == REQ_OPEN_ALBUM_N_5) {
-                tipText.setText("相册剪裁：");
                 File imgUri = new File(mImageFile, String.valueOf(data.getData()));
                 Uri dataUri = FileProvider.getUriForFile(this, AUTHORITY, imgUri);
-                startPhotoZoom(dataUri);
-            } else if (requestCode == REQ_OPEN_ALBUM_4) {
-                tipText.setText("相册剪裁：");
-                startPhotoZoom(data.getData());
-            } else if (requestCode == REQ_SYS_CLIP_IMAGE_7) {
+                if (flagUcrop){
+                    tipText.setText("相册Ucrop剪裁：");
+                    useUCrop(dataUri);
+                    flagUcrop = false;
+                }else{
+                    tipText.setText("相册系统剪裁：");
+                    startPhotoZoom(dataUri);
+                }
+            }else if (requestCode == REQ_SYS_CLIP_IMAGE_7) {
                 resultShow.setImageBitmap(BitmapFactory.decodeFile(mCropFile.getAbsolutePath()));
-            } else { // REQ_VIDEO_CAPTURE_6
+            } else if(requestCode == UCrop.REQUEST_CROP){
+                final Uri resultUri = UCrop.getOutput(data);
+                resultShow.setImageBitmap(BitmapFactory.decodeFile(GetImagePath.getPath(this,resultUri)));
+            }else if(requestCode == UCrop.RESULT_ERROR){
+                final Throwable cropError = UCrop.getError(data);
+            }else { // REQ_VIDEO_CAPTURE_6
                 videoView.setVisibility(View.VISIBLE);
                 videoView.setVideoURI(data.getData());
                 videoView.start();
@@ -304,6 +346,15 @@ public class SystemCameraActivity extends AppCompatActivity {
         intent.putExtra("return-data", false);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());// 图片格式
         startActivityForResult(intent, REQ_SYS_CLIP_IMAGE_7);//返回剪裁后
+    }
+
+
+    private void useUCrop(Uri sourceUri){
+        Uri destinationUri = Uri.fromFile(mCropFile);
+        UCrop.of(sourceUri, destinationUri)
+                .withAspectRatio(16, 9)
+                .withMaxResultSize(500, 600)
+                .start(this);
     }
 
 }

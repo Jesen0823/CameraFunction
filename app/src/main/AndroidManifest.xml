@@ -35,7 +35,7 @@
             </intent-filter>
         </activity>
         <!--
- authorities：签名认证，自定义
+         authorities：签名认证，自定义
          grantUriPermissions: URI赋予临时访问权限
          replace: 可以访问的文件的路径配置信息
         -->
@@ -48,6 +48,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- com.github.yalantis:ucrop:2.2.6 -->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
     </application>
 
 </manifest>

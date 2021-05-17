@@ -43,7 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Capture then clip"
+            android:text="拍照系统裁剪"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/thumbSysCameraBtn" />
 
@@ -52,18 +52,36 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Open album then clip"
+            android:text="打开相册系统裁剪"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/captureClipBtn" />
+
+        <Button
+            android:id="@+id/ucropCaptureBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/albumClipBtn"
+            android:layout_marginTop="10dp"
+            android:text="拍照Ucrop裁剪" />
+
+        <Button
+            android:id="@+id/uCropAlbumBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ucropCaptureBtn"
+            android:layout_marginTop="10dp"
+            android:text="打开相册Ucrop裁剪" />
 
         <Button
             android:id="@+id/captureVideoBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="capture video then play it"
+            android:text="录视频并播放"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/albumClipBtn" />
+            app:layout_constraintTop_toBottomOf="@id/uCropAlbumBtn" />
 
         <TextView
             android:id="@+id/tip_t"

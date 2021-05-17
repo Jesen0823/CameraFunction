@@ -22,13 +22,6 @@
             android:text="系统相机拍照" />
 
         <Button
-            android:id="@+id/ucropCaptureBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Ucrop裁剪" />
-
-        <Button
             android:id="@+id/cameraBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
