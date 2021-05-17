@@ -215,13 +215,13 @@ public class SystemCameraActivity extends AppCompatActivity {
                     startPhotoZoom(data.getData());
                 }
             } else if (requestCode == REQ_OPEN_ALBUM_N_5) {
-                File imgUri = new File(mImageFile, String.valueOf(data.getData()));
-                Uri dataUri = FileProvider.getUriForFile(this, AUTHORITY, imgUri);
                 if (flagUcrop){
                     tipText.setText("相册Ucrop剪裁：");
-                    useUCrop(dataUri);
+                    useUCrop(data.getData());
                     flagUcrop = false;
                 }else{
+                    File imgUri = new File(mImageFile, String.valueOf(data.getData()));
+                    Uri dataUri = FileProvider.getUriForFile(this, AUTHORITY, imgUri);
                     tipText.setText("相册系统剪裁：");
                     startPhotoZoom(dataUri);
                 }
