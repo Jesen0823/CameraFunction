@@ -143,7 +143,8 @@ class Camera2Helper(val activity: Activity, private val textureView: TextureView
             // 摄像头方向
             mCameraSensorOrientation = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION)!!
 
-            val configurationMap = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+            val configurationMap
+                    = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
 
             val saveImgSize = configurationMap?.getOutputSizes(ImageFormat.JPEG)
             val previewImgSize = configurationMap?.getOutputSizes(SurfaceTexture::class.java)
@@ -239,9 +240,8 @@ class Camera2Helper(val activity: Activity, private val textureView: TextureView
             }
 
         }
-
         mCameraDevice.createCaptureSession(
-                listOf(mImageReaderSurface, mTextureSurface),
+                listOf(mTextureSurface, mImageReaderSurface),
                 sessionStateCallback,
                 mCameraHandler
         )
