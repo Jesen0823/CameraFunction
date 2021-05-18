@@ -36,6 +36,13 @@
             android:text="用Camera 录视频" />
 
         <Button
+            android:id="@+id/camera2SimpleBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="使用Camera2 简单拍照" />
+
+        <Button
             android:id="@+id/camera2Btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

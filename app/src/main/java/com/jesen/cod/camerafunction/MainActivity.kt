@@ -8,6 +8,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.jesen.cod.camerafunction.activity.SystemCameraActivity
 import com.jesen.cod.camerafunction.camera.CameraActivity
+import com.jesen.cod.camerafunction.camera2.Camera2Activity
+import com.jesen.cod.camerafunction.camera2.Camera2SimpleActivity
 import com.jesen.cod.camerafunction.utils.Outil
 import com.jesen.cod.camerafunction.utils.PermissionUtil
 import com.jesen.cod.camerafunction.utils.PermissionUtil.PERMISSION_REQUEST_CODE
@@ -52,6 +54,21 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             })
         }
+
+        camera2Btn.setOnClickListener {
+            PermissionUtil.checkPermissions(this, permissionList, Runnable {
+                val intent = Intent(this, Camera2Activity::class.java)
+                startActivity(intent)
+            })
+        }
+
+        camera2SimpleBtn.setOnClickListener {
+            PermissionUtil.checkPermissions(this, permissionList, Runnable {
+                val intent = Intent(this, Camera2SimpleActivity::class.java)
+                startActivity(intent)
+            })
+        }
+
 
 
     }
