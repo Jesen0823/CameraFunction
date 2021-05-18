@@ -20,8 +20,8 @@ class Camera2Activity : AppCompatActivity() {
 
         mCamera2Helper = Camera2Helper(this, textureView)
 
-        btnTakePic.setOnClickListener { mCamera2Helper.takePic() }
-        ivExchange.setOnClickListener { mCamera2Helper.changeCamera() }
+        captureBtn.setOnClickListener { mCamera2Helper.takePic() }
+        changeCamera.setOnClickListener { mCamera2Helper.changeCamera() }
 
     }
 

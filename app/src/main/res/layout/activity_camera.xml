@@ -25,7 +25,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
-            android:id="@+id/ivSetting"
+            android:id="@+id/settingIv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -33,7 +33,7 @@
             android:src="@drawable/ic_settings" />
 
         <ImageButton
-            android:id="@+id/btnTakePic"
+            android:id="@+id/captureBtn"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_centerInParent="true"
@@ -42,7 +42,7 @@
             android:visibility="visible" />
 
         <ImageView
-            android:id="@+id/btnStart"
+            android:id="@+id/startBtn"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_centerInParent="true"
@@ -50,7 +50,7 @@
             android:visibility="gone" />
 
         <ImageView
-            android:id="@+id/btnStop"
+            android:id="@+id/stopBtn"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_centerInParent="true"
@@ -59,7 +59,7 @@
 
 
         <ImageView
-            android:id="@+id/ivExchange"
+            android:id="@+id/changeCamera"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentRight="true"

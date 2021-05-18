@@ -13,7 +13,6 @@ import com.jesen.cod.camerafunction.utils.BitmapUtil
 import com.jesen.cod.camerafunction.utils.FileUtil
 import com.jesen.cod.camerafunction.utils.Outil
 import kotlinx.android.synthetic.main.activity_camera.*
-import kotlinx.android.synthetic.main.activity_camera.view.*
 import okio.buffer
 import okio.sink
 import java.lang.Exception
@@ -49,7 +48,7 @@ class CameraActivity : AppCompatActivity() {
 
             override fun onTakePic(data: ByteArray) {
                 savePic(data)
-                btnTakePic.isClickable = true
+                captureBtn.isClickable = true
             }
 
             override fun onFaceDetect(faces: ArrayList<RectF>) {
@@ -58,22 +57,22 @@ class CameraActivity : AppCompatActivity() {
         })
 
         if (intent.getIntExtra("type", 0) == TYPE_RECORD) { //录视频
-            btnTakePic.visibility = View.GONE
-            btnStart.visibility = View.VISIBLE
+            captureBtn.visibility = View.GONE
+            startBtn.visibility = View.VISIBLE
         }
 
-        btnTakePic.setOnClickListener { mCameraHelper.takePic() }
-        ivExchange.setOnClickListener { mCameraHelper.exchangeCamera() }
-        btnStart.setOnClickListener {
-            ivExchange.isClickable = false
-            btnStart.visibility = View.GONE
-            btnStop.visibility = View.VISIBLE
+        captureBtn.setOnClickListener { mCameraHelper.takePic() }
+        changeCamera.setOnClickListener { mCameraHelper.exchangeCamera() }
+        startBtn.setOnClickListener {
+            changeCamera.isClickable = false
+            startBtn.visibility = View.GONE
+            stopBtn.visibility = View.VISIBLE
             mVideoRecorderHelper?.startRecord()
         }
-        btnStop.setOnClickListener {
-            btnStart.visibility = View.VISIBLE
-            btnStop.visibility = View.GONE
-            ivExchange.isClickable = true
+        stopBtn.setOnClickListener {
+            startBtn.visibility = View.VISIBLE
+            stopBtn.visibility = View.GONE
+            changeCamera.isClickable = true
             mVideoRecorderHelper?.stopRecord()
         }
     }

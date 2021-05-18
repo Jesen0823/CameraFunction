@@ -7,11 +7,9 @@ import android.content.pm.PackageManager
 import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.*
-import android.hardware.camera2.params.OutputConfiguration
-import android.hardware.camera2.params.SessionConfiguration
+
 import android.media.ImageReader
 import android.os.Build
-import android.os.Build.VERSION_CODES.P
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Size
@@ -23,6 +21,7 @@ import androidx.core.content.ContextCompat
 import com.jesen.cod.camerafunction.utils.BitmapUtil
 import com.jesen.cod.camerafunction.utils.Outil
 import java.util.*
+import java.util.concurrent.Executor
 import kotlin.Comparator
 import kotlin.collections.ArrayList
 
@@ -34,11 +33,12 @@ const val SAVE_HEIGHT = 1280
 class Camera2Helper(val activity: Activity, private val textureView: TextureView) {
 
     private lateinit var mCameraManager: CameraManager
-    private var mImgReader: ImageReader? = null
-    private var mCameraDevice: CameraDevice? = null
-    private var mCameraCaptureSession: CameraCaptureSession? = null
+    private lateinit var mImgReader: ImageReader
+    private lateinit var mCameraDevice: CameraDevice
+    private lateinit var mCameraCaptureSession: CameraCaptureSession
     private lateinit var mCameraCharacteristics: CameraCharacteristics
-    private lateinit var mSurface:Surface
+    private lateinit var mTextureSurface: Surface
+    lateinit var mImageReaderSurface: Surface
 
     private var mCameraId = "0"
     private var mCameraSensorOrientation = 0 // 摄像头方向
@@ -49,7 +49,7 @@ class Camera2Helper(val activity: Activity, private val textureView: TextureView
     private var canChangeCamera = false
 
     private var mCameraHandler: Handler
-    private val mHandlerThread = HandlerThread("CameraThread")
+    private lateinit var mHandlerThread: HandlerThread
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private var mPreviewSize = Size(PREVIEW_WIDTH, PREVIEW_HEIGHT)
@@ -96,6 +96,7 @@ class Camera2Helper(val activity: Activity, private val textureView: TextureView
     }
 
     init {
+        mHandlerThread = HandlerThread("CameraThread")
         mHandlerThread.start()
         mCameraHandler = Handler(mHandlerThread.looper)
 
@@ -111,6 +112,7 @@ class Camera2Helper(val activity: Activity, private val textureView: TextureView
 
             @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
             override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
+                mTextureSurface = Surface(textureView.surfaceTexture)
                 initCameraInfo()
             }
         }
@@ -177,11 +179,8 @@ class Camera2Helper(val activity: Activity, private val textureView: TextureView
                     mSaveSize.height,
                     ImageFormat.JPEG,
                     1)
-            mImgReader?.setOnImageAvailableListener(onImageAvailableListener, mCameraHandler)
-            mCameraId = cameraIdList[0]  //testtest
-            mSurface = Surface(textureView.surfaceTexture)
-
-
+            mImgReader.setOnImageAvailableListener(onImageAvailableListener, mCameraHandler)
+            mImageReaderSurface = mImgReader.surface
             openCamera()
         }
     }
@@ -204,33 +203,55 @@ class Camera2Helper(val activity: Activity, private val textureView: TextureView
             override fun onDisconnected(cameraDevice: CameraDevice) {
                 Outil.log("openCamera onDisconnected.")
                 cameraDevice.close()
-                mCameraDevice = null
             }
 
             override fun onError(cameraDevice: CameraDevice, error: Int) {
                 Outil.log("openCamera error, errorCode: $error.")
                 cameraDevice.close()
-                mCameraDevice = null
             }
         }, mCameraHandler)
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun createCaptureSession(cameraDevice: CameraDevice) {
-        val captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
-        captureRequestBuilder.addTarget(mSurface)
-        // 闪光灯
-        /*captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH)*/
-        // 自动对焦
-        /*captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)*/
 
-        if (Build.VERSION.SDK_INT >= P) {
+        val sessionStateCallback = object : CameraCaptureSession.StateCallback() {
+            override fun onConfigureFailed(session: CameraCaptureSession) {
+                Outil.log("cameraDevice, open preview session failed.")
+            }
+
+            override fun onConfigured(session: CameraCaptureSession) {
+                mCameraCaptureSession = session
+                var captureRequestBuilder
+                        = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
+                captureRequestBuilder.addTarget(mTextureSurface)
+                // 闪光灯
+                captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+                        CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH)
+                // 自动对焦
+                captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+                        CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
+                mCameraCaptureSession.setRepeatingRequest(
+                        captureRequestBuilder.build(),
+                        mCaptureCallBack,
+                        mCameraHandler
+                )
+            }
+
+        }
+
+        mCameraDevice.createCaptureSession(
+                listOf(mImageReaderSurface, mTextureSurface),
+                sessionStateCallback,
+                mCameraHandler
+        )
+
+
+        /*if (Build.VERSION.SDK_INT >= P) {
             cameraDevice.createCaptureSession(
                     SessionConfiguration(
                             SessionConfiguration.SESSION_REGULAR,
-                            Collections.singletonList(OutputConfiguration(mSurface)),
+                            Collections.singletonList(OutputConfiguration(mTextureSurface)),
                             activity.mainExecutor,
                             object : CameraCaptureSession.StateCallback() {
 
@@ -249,22 +270,7 @@ class Camera2Helper(val activity: Activity, private val textureView: TextureView
                             }
                     )
             )
-        }
-
-        /*
-        cameraDevice.createCaptureSession(arrayListOf(surface, mImgReader?.surface),
-                     object : CameraCaptureSession.StateCallback() {
-                         override fun onConfigureFailed(session: CameraCaptureSession) {
-                             Outil.log("cameraDevice, open preview session failed.")
-                         }
-
-                         override fun onConfigured(session: CameraCaptureSession) {
-                             mCameraCaptureSession = session
-                             session.setRepeatingRequest(captureRequestBuilder.build(), mCaptureCallBack, mCameraHandler)
-                         }
-
-                     }, mCameraHandler)
-         */
+        }*/
     }
 
     /**
@@ -274,10 +280,9 @@ class Camera2Helper(val activity: Activity, private val textureView: TextureView
     fun takePic() {
         if (mCameraDevice == null || !textureView.isAvailable || !canTakePic) return
 
-        mCameraDevice?.apply {
+        mCameraDevice.apply {
 
-            val captureRequestBuilder
-                    = createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
+            val captureRequestBuilder = createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
             mImgReader?.surface?.let { captureRequestBuilder.addTarget(it) }
 
             captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
@@ -286,7 +291,7 @@ class Camera2Helper(val activity: Activity, private val textureView: TextureView
                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH)     // 闪光灯
             captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, mCameraSensorOrientation)
             //根据摄像头方向对保存的照片进行旋转，使其为"自然方向"
-            mCameraCaptureSession?.capture(captureRequestBuilder.build(), null, mCameraHandler)
+            mCameraCaptureSession.capture(captureRequestBuilder.build(), null, mCameraHandler)
                     ?: Toast.makeText(activity, "takePic error", Toast.LENGTH_SHORT).show()
         }
     }
@@ -309,14 +314,11 @@ class Camera2Helper(val activity: Activity, private val textureView: TextureView
     }
 
     fun releaseCamera() {
-        mCameraCaptureSession?.close()
-        mCameraCaptureSession = null
+        mCameraCaptureSession.close()
 
-        mCameraDevice?.close()
-        mCameraDevice = null
+        mCameraDevice.close()
 
-        mImgReader?.close()
-        mImgReader = null
+        mImgReader.close()
 
         canChangeCamera = false
     }

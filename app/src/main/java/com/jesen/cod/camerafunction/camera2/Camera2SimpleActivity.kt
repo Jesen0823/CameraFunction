@@ -10,6 +10,8 @@ import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraDevice
 import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CaptureRequest
+import android.hardware.camera2.params.OutputConfiguration
+import android.hardware.camera2.params.SessionConfiguration
 import android.media.ImageReader
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +23,7 @@ import androidx.core.app.ActivityCompat
 import com.jesen.cod.camerafunction.R
 import com.jesen.cod.camerafunction.utils.Outil
 import kotlinx.android.synthetic.main.activity_camera2_simple.*
+import java.util.*
 
 class Camera2SimpleActivity : AppCompatActivity() {
 
@@ -65,6 +68,10 @@ class Camera2SimpleActivity : AppCompatActivity() {
                 CameraDevice.TEMPLATE_STILL_CAPTURE
         )
         requestBuilder.addTarget(imageReaderSurface)
+        requestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+                CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE) // 自动对焦
+        requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+                CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH)     // 闪光灯
         requestBuilder.set(CaptureRequest.JPEG_ORIENTATION, 90)
         captureSession.capture(requestBuilder.build(), null, null)
     }
@@ -104,13 +111,19 @@ class Camera2SimpleActivity : AppCompatActivity() {
                 val requestBuilder = mCameraDevice.createCaptureRequest(
                         CameraDevice.TEMPLATE_PREVIEW)
                 requestBuilder.addTarget(textureViewSurface)
-
+                // 闪光灯
+                requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+                        CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH)
+                // 自动对焦
+                requestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+                        CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
                 captureSession.setRepeatingRequest(requestBuilder.build(), null, null)
             }
 
         }
 
         val cameraStateCallback = object : CameraDevice.StateCallback() {
+            @RequiresApi(Build.VERSION_CODES.P)
             override fun onOpened(cameraDevice: CameraDevice) {
                 mCameraDevice = cameraDevice
                 mCameraDevice.createCaptureSession(
@@ -118,14 +131,21 @@ class Camera2SimpleActivity : AppCompatActivity() {
                         sessionStateCallback,
                         null
                 )
+
+                // new Api:
+                /*val sessionConfiguration = SessionConfiguration(SessionConfiguration.SESSION_REGULAR,
+                        Collections.singletonList( OutputConfiguration(textureViewSurface)),
+                        mainExecutor,
+                        sessionStateCallback)
+                mCameraDevice.createCaptureSession(sessionConfiguration)*/
             }
 
             override fun onDisconnected(cameraDevice: CameraDevice) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
             }
 
             override fun onError(cameraDevice: CameraDevice, error: Int) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
             }
         }
 
