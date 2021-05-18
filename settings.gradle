@@ -1,3 +1,6 @@
 rootProject.name='CameraFunction'
-include ':app'
+include ':app', ':Camera2Basic'
 include ':testapplication'
+include ':camera2basic'
+include ':camera2Basic'
+include ':utils'
