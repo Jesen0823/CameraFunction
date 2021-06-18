@@ -35,4 +35,7 @@
     <external-path
         name="video"
         path="/Movies/" />
+    <files-path
+        name="audio"
+        path="/audio/" />
 </paths>

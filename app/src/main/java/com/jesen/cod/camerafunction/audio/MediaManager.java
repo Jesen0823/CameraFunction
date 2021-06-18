@@ -31,7 +31,7 @@ public class MediaManager {
     private static boolean isPause;
     public final static String PCM_URL = "https://gitee.com/null_694_3232/ffmpeg-play-kot/tree/master/video_resource/out.pcm";
 
-    private static final String AUTHORITY = "com.jesen.mediaproject.provider";
+    private static final String AUTHORITY = "com.jesen.camerademo.fileProvider";
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public static void playSound(Context context, String soundPath, MediaPlayer.OnCompletionListener onCompletionListener){
