@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+}
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs"
 
 android {
@@ -48,15 +50,15 @@ android {
     }
 
     // Set the source of tests to same for both Unit and Instrumented tests
-    sourceSets {
-        String sharedTestDir = 'src/test/java'
+    /*sourceSets {
+        sharedTestDir = 'src/test/java'
         test {
             java.srcDir sharedTestDir
         }
         androidTest {
             java.srcDir sharedTestDir
         }
-    }
+    }*/
 
     // Necessary for Robolectric (Unit tests)
     testOptions.unitTests.includeAndroidResources = true

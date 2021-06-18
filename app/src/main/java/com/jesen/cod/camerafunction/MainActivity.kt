@@ -7,16 +7,19 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.jesen.cod.camerafunction.activity.SystemCameraActivity
+import com.jesen.cod.camerafunction.audio.AudioRecordActivity
 import com.jesen.cod.camerafunction.camera.CameraActivity
 import com.jesen.cod.camerafunction.camera2.Camera2Activity
 import com.jesen.cod.camerafunction.camera2.Camera2SimpleActivity
+import com.jesen.cod.camerafunction.databinding.ActivityMainBinding
 import com.jesen.cod.camerafunction.utils.Outil
 import com.jesen.cod.camerafunction.utils.PermissionUtil
 import com.jesen.cod.camerafunction.utils.PermissionUtil.PERMISSION_REQUEST_CODE
 import com.jesen.cod.camerafunction.utils.PermissionUtil.PERMISSION_SETTING_CODE
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
 
     private val permissionList = arrayOf(
             Manifest.permission.READ_PHONE_STATE,
@@ -25,7 +28,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        //setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
         setClick()
 
@@ -33,13 +39,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setClick(){
-        btCapture.setOnClickListener {
+        binding.btCapture.setOnClickListener {
             PermissionUtil.checkPermissions(this, permissionList, Runnable {
                 startActivity(Intent(this, SystemCameraActivity::class.java))
             })
         }
 
-        cameraBtn.setOnClickListener {
+        binding.cameraBtn.setOnClickListener {
             PermissionUtil.checkPermissions(this, permissionList, Runnable {
                 val intent = Intent(this, CameraActivity::class.java)
                 intent.putExtra("type", 0)
@@ -47,7 +53,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        cameraVideoBtn.setOnClickListener {
+        binding.cameraVideoBtn.setOnClickListener {
             PermissionUtil.checkPermissions(this, permissionList, Runnable {
                 val intent = Intent(this, CameraActivity::class.java)
                 intent.putExtra("type", 1)
@@ -55,25 +61,29 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        camera2Btn.setOnClickListener {
+        binding.camera2Btn.setOnClickListener {
             PermissionUtil.checkPermissions(this, permissionList, Runnable {
                 val intent = Intent(this, Camera2Activity::class.java)
                 startActivity(intent)
             })
         }
 
-        camera2SimpleBtn.setOnClickListener {
+        binding.camera2SimpleBtn.setOnClickListener {
             PermissionUtil.checkPermissions(this, permissionList, Runnable {
                 val intent = Intent(this, Camera2SimpleActivity::class.java)
                 startActivity(intent)
             })
         }
 
-
+        binding.audioRecordingBtn.setOnClickListener {
+            val intent = Intent(this, AudioRecordActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Outil.log("MainActivity, onRequestPermissionsResult")
         when(requestCode){
             PERMISSION_REQUEST_CODE ->{
@@ -108,16 +118,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

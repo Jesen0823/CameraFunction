@@ -55,6 +55,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="用Camera2 人脸检测" />
+        <Button
+            android:id="@+id/audioRecordingBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="录音，播放" />
 
         <Button
             android:id="@+id/btTest"

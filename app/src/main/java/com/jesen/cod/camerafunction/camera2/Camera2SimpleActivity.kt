@@ -21,11 +21,12 @@ import android.view.TextureView
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import com.jesen.cod.camerafunction.R
+import com.jesen.cod.camerafunction.databinding.ActivityCamera2SimpleBinding
 import com.jesen.cod.camerafunction.utils.Outil
-import kotlinx.android.synthetic.main.activity_camera2_simple.*
-import java.util.*
 
 class Camera2SimpleActivity : AppCompatActivity() {
+
+    private lateinit var mBinding: ActivityCamera2SimpleBinding
 
     private lateinit var mCameraDevice: CameraDevice
     private lateinit var textureViewSurface: Surface
@@ -36,9 +37,10 @@ class Camera2SimpleActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mBinding = ActivityCamera2SimpleBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_camera2_simple)
 
-        textureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
+        mBinding.textureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
             override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
             }
 
@@ -51,13 +53,13 @@ class Camera2SimpleActivity : AppCompatActivity() {
 
             @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
             override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-                textureViewSurface = Surface(textureView.surfaceTexture)
+                textureViewSurface = Surface(mBinding.textureView.surfaceTexture)
                 openCamera()
             }
 
         }
 
-        button.setOnClickListener {
+        mBinding.button.setOnClickListener {
             takePic()
         }
     }
@@ -95,7 +97,7 @@ class Camera2SimpleActivity : AppCompatActivity() {
             image.close()
 
             val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytesLen)
-            imageView.setImageBitmap(bitmap)
+            mBinding.imageView.setImageBitmap(bitmap)
 
         }, null)
 

@@ -9,10 +9,10 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import com.jesen.cod.camerafunction.R
+import com.jesen.cod.camerafunction.databinding.ActivityCameraBinding
 import com.jesen.cod.camerafunction.utils.BitmapUtil
 import com.jesen.cod.camerafunction.utils.FileUtil
 import com.jesen.cod.camerafunction.utils.Outil
-import kotlinx.android.synthetic.main.activity_camera.*
 import okio.buffer
 import okio.sink
 import java.lang.Exception
@@ -23,16 +23,18 @@ const val TYPE_CAPTURE = 0
 
 class CameraActivity : AppCompatActivity() {
 
+    private lateinit var mBinding: ActivityCameraBinding
     private lateinit var mCameraHelper: CameraHelper
     private var mVideoRecorderHelper: VideoRecorderHelper? = null
     var lock = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mBinding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_camera)
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
-        mCameraHelper = CameraHelper(this, surfaceView)
+        mCameraHelper = CameraHelper(this, mBinding.surfaceView)
         mCameraHelper.addCallBack(object : CameraHelper.CameraCallBack {
             override fun onPreviewFrame(data: ByteArray) {
                 if (!lock) {
@@ -48,31 +50,31 @@ class CameraActivity : AppCompatActivity() {
 
             override fun onTakePic(data: ByteArray) {
                 savePic(data)
-                captureBtn.isClickable = true
+                mBinding.captureBtn.isClickable = true
             }
 
             override fun onFaceDetect(faces: ArrayList<RectF>) {
-                faceView.setFaces(faces)
+                mBinding.faceView.setFaces(faces)
             }
         })
 
         if (intent.getIntExtra("type", 0) == TYPE_RECORD) { //录视频
-            captureBtn.visibility = View.GONE
-            startBtn.visibility = View.VISIBLE
+            mBinding.captureBtn.visibility = View.GONE
+            mBinding.startBtn.visibility = View.VISIBLE
         }
 
-        captureBtn.setOnClickListener { mCameraHelper.takePic() }
-        changeCamera.setOnClickListener { mCameraHelper.exchangeCamera() }
-        startBtn.setOnClickListener {
-            changeCamera.isClickable = false
-            startBtn.visibility = View.GONE
-            stopBtn.visibility = View.VISIBLE
+        mBinding.captureBtn.setOnClickListener { mCameraHelper.takePic() }
+        mBinding.changeCamera.setOnClickListener { mCameraHelper.exchangeCamera() };
+        mBinding.startBtn.setOnClickListener {
+            mBinding.changeCamera.isClickable = false
+            mBinding.startBtn.visibility = View.GONE
+            mBinding.stopBtn.visibility = View.VISIBLE
             mVideoRecorderHelper?.startRecord()
         }
-        stopBtn.setOnClickListener {
-            startBtn.visibility = View.VISIBLE
-            stopBtn.visibility = View.GONE
-            changeCamera.isClickable = true
+        mBinding.stopBtn.setOnClickListener {
+            mBinding.startBtn.visibility = View.VISIBLE
+            mBinding.stopBtn.visibility = View.GONE
+            mBinding.changeCamera.isClickable = true
             mVideoRecorderHelper?.stopRecord()
         }
     }
